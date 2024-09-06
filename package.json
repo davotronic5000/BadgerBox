@@ -12,7 +12,10 @@
     "dependencies": {
         "next": "14.2.8",
         "react": "^18",
-        "react-dom": "^18"
+        "react-aria-components": "^1.3.3",
+        "react-dom": "^18",
+        "tailwindcss-opentype": "^1.1.0",
+        "tailwindcss-react-aria-components": "^1.1.5"
     },
     "devDependencies": {
         "@types/node": "^20",

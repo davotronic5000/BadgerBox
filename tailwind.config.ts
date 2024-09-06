@@ -7,13 +7,16 @@ const config: Config = {
         "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     ],
     theme: {
-    extend: {
+        extend: {
             colors: {
                 background: "var(--background)",
                 foreground: "var(--foreground)",
             },
         },
     },
-    plugins: [],
+    plugins: [
+        require("tailwindcss-opentype"),
+        require("tailwindcss-react-aria-components"),
+    ],
 };
 export default config;
