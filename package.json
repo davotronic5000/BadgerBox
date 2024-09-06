@@ -1,26 +1,35 @@
 {
-  "name": "my-app",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.8"
-  },
-  "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.8"
-  }
+    "name": "my-app",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "dev": "concurrently -n NEXT,TS -c magenta,cyan \"next dev\" \"yarn ts --watch\"",
+        "ts": "tsc --noEmit --incremental --preserveWatchOutput --pretty"
+    },
+    "dependencies": {
+        "next": "14.2.8",
+        "react": "^18",
+        "react-aria-components": "^1.3.3",
+        "react-dom": "^18",
+        "tailwindcss-opentype": "^1.1.0",
+        "tailwindcss-react-aria-components": "^1.1.5"
+    },
+    "devDependencies": {
+        "@types/node": "^20",
+        "@types/react": "^18",
+        "@types/react-dom": "^18",
+        "concurrently": "^8.2.2",
+        "eslint": "^8",
+        "eslint-config-next": "14.2.8",
+        "eslint-config-prettier": "^9.1.0",
+        "postcss": "^8",
+        "prettier": "3.3.3",
+        "prettier-plugin-organize-imports": "^4.0.0",
+        "prettier-plugin-tailwindcss": "^0.6.6",
+        "tailwindcss": "^3.4.1",
+        "typescript": "^5"
+    }
 }
