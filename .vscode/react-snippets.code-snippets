@@ -1,0 +1,26 @@
+{
+    "New Component": {
+        "scope": "typescriptreact",
+        "prefix": ["component", "comp"],
+        "body": [
+            "import { ReactNode } from \"react\";",
+            "",
+            "interface ${1:Page}Props {",
+            "\tchildren${2:?}: ReactNode",
+            "}",
+            "",
+            "const ${1:Page} = ({ children }: ${1:Page}Props) => {",
+            "\treturn <div>${0}</div>;",
+            "};",
+            "",
+            "export default ${1:Page};",
+        ],
+    },
+    "New Jinx Update": {
+        "scope": "typescript",
+        "prefix": ["jinxupdate", "jxup"],
+        "body": [
+            "{ date: \"${1:$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE}\", reason: \"${2:Added jinx.}\" },",
+        ],
+    },
+}
