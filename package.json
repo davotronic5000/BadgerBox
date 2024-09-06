@@ -3,10 +3,11 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "lint": "next lint",
+        "dev": "concurrently -n NEXT,TS -c magenta,cyan \"next dev\" \"yarn ts --watch\"",
+        "ts": "tsc --noEmit --incremental --preserveWatchOutput --pretty"
     },
     "dependencies": {
         "next": "14.2.8",
@@ -17,6 +18,7 @@
         "@types/node": "^20",
         "@types/react": "^18",
         "@types/react-dom": "^18",
+        "concurrently": "^8.2.2",
         "eslint": "^8",
         "eslint-config-next": "14.2.8",
         "eslint-config-prettier": "^9.1.0",
