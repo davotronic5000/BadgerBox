@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Bungee, Poppins } from "next/font/google";
 import ClientProviders from "./client-providers";
 import "./globals.css";
 
-const geistSans = localFont({
-    src: "./fonts/GeistVF.woff",
-    variable: "--font-geist-sans",
-    weight: "100 900",
+const bungee = Bungee({
+    subsets: ["latin"],
+    display: "swap",
+    variable: "--font-bungee",
+    weight: "400",
 });
-const geistMono = localFont({
-    src: "./fonts/GeistMonoVF.woff",
-    variable: "--font-geist-mono",
-    weight: "100 900",
+
+const poppins = Poppins({
+    subsets: ["latin"],
+    display: "swap",
+    variable: "--font-poppins",
+    weight: ["400", "700"],
+    style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -25,10 +29,11 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-            <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-            >
+        <html
+            lang="en"
+            className={`${bungee.variable} ${poppins.variable} antialiased`}
+        >
+            <body>
                 <ClientProviders>{children}</ClientProviders>
             </body>
         </html>
