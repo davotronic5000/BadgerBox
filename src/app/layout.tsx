@@ -31,7 +31,7 @@ export default function RootLayout({
     return (
         <html
             lang="en"
-            className={`${bungee.variable} ${poppins.variable} antialiased`}
+            className={`${bungee.variable} ${poppins.variable} h-full bg-green-800 bg-gradient-to-b from-sky-500 from-45% via-lime-500 via-50% to-lime-900 font-content antialiased`}
         >
             <body>
                 <ClientProviders>{children}</ClientProviders>

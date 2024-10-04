@@ -20,6 +20,9 @@ dependencies:
   redis:
     specifier: ^4.7.0
     version: 4.7.0
+  tailwindcss-bg-patterns:
+    specifier: ^0.3.0
+    version: 0.3.0(tailwindcss@3.4.10)
   tailwindcss-opentype:
     specifier: ^1.1.0
     version: 1.1.0(tailwindcss@3.4.10)
@@ -4440,6 +4443,14 @@ packages:
   /supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+
+  /tailwindcss-bg-patterns@0.3.0(tailwindcss@3.4.10):
+    resolution: {integrity: sha512-3pXCiu9MPBvfBAEYgrxpNZLZoDlVHdkofpuQ9uhVQ2RT+80BTTweL9s0uIvakfH2LRl4GCG+nncyCB+1aN1gpA==}
+    peerDependencies:
+      tailwindcss: '>2'
+    dependencies:
+      tailwindcss: 3.4.10
+    dev: false
 
   /tailwindcss-opentype@1.1.0(tailwindcss@3.4.10):
     resolution: {integrity: sha512-d/+/oBITS2JX/Nn+20WSfnxQbYNcSHMNrKeBwmgetxf/9Nmi5k1pOae6OJC4WD+5M8jX9Xb8TnLZ2lkp6qv09A==}
