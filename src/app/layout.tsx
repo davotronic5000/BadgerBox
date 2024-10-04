@@ -34,7 +34,14 @@ export default function RootLayout({
             className={`${bungee.variable} ${poppins.variable} h-full bg-green-800 bg-gradient-to-b from-sky-500 from-45% via-lime-500 via-50% to-lime-900 font-content antialiased`}
         >
             <body>
-                <ClientProviders>{children}</ClientProviders>
+                <ClientProviders>
+                    <div className="flex flex-col items-center gap-y-4 p-4">
+                        <h1 className="shadow-solid-lg border-14 pattern-dots pattern-lime-800 pattern-bg-slate-700 pattern-size-10 pattern-opacity-100 my-10 rounded-3xl border-lime-500 px-10 py-4 text-center font-title text-9xl text-lime-500">
+                            BadgerBox
+                        </h1>
+                        {children}
+                    </div>
+                </ClientProviders>
             </body>
         </html>
     );

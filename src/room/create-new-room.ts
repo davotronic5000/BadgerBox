@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { createClient } from "redis";
 import Room from "./room";
 
@@ -10,6 +11,7 @@ const createRoom = async () => {
     await client.connect();
 
     await client.set(newRoom.id, JSON.stringify(newRoom));
+    redirect(`/room/${newRoom.id}`);
 };
 
 export default createRoom;
