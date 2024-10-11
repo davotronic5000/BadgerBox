@@ -15,6 +15,7 @@
         "react-aria-components": "^1.3.3",
         "react-dom": "^18",
         "redis": "^4.7.0",
+        "socket.io-client": "^4.8.0",
         "tailwindcss-bg-patterns": "^0.3.0",
         "tailwindcss-opentype": "^1.1.0",
         "tailwindcss-react-aria-components": "^1.1.5"
