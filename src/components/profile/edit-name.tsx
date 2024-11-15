@@ -1,4 +1,4 @@
-import { CheckIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
+import { CheckIcon, PencilSquareIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 import {
     FieldError,

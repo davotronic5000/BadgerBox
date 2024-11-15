@@ -3,16 +3,31 @@ import Button from "@/components/button/button";
 import Card from "@/components/card/card";
 import Header from "@/components/headers/header";
 import { useCallback, useEffect, useState } from "react";
+import MemberList from "./member-list";
 import { socket } from "./socket";
 
 interface RoomProps {
     code: string;
 }
 
+export interface MemberLists {
+    owners: string[];
+    players: string[];
+    audience: string[];
+}
+
+export const defaultMemberLists = {
+    owners: [],
+    players: [],
+    audience: [],
+};
+
 const Room = ({ code }: RoomProps) => {
-    const [isConnected, setIsConnected] = useState(false);
-    const [transport, setTransport] = useState("N/A");
-    const [lastMessage, setMessage] = useState("N/A");
+    const [memberList, setMemberList] =
+        useState<MemberLists>(defaultMemberLists);
+    const [memberStatusType, setMemberStatusType] = useState<
+        "player" | "audience"
+    >("audience");
 
     useEffect(() => {
         if (socket.connected) {
@@ -22,24 +37,16 @@ const Room = ({ code }: RoomProps) => {
         }
 
         function onConnect() {
-            setIsConnected(true);
-            setTransport(socket.io.engine.transport.name);
-
-            socket.io.engine.on("upgrade", (transport) => {
-                setTransport(transport.name);
-            });
-        }
-
-        function onDisconnect() {
-            setIsConnected(false);
-            setTransport("N/A");
-            setMessage("N/A");
+            console.log("connected");
+            socket.emit("joinRoom", code);
         }
 
         socket.on("connect", onConnect);
-        socket.on("disconnect", onDisconnect);
-        socket.on("hello", (value) => {
-            setMessage(value);
+        socket.on("memberList", (players) => {
+            setMemberList(players);
+        });
+        socket.on("memberStatus", (member) => {
+            setMemberStatusType(member.memberType);
         });
         socket.onAny((event, ...args) => {
             console.log(event, args);
@@ -47,22 +54,18 @@ const Room = ({ code }: RoomProps) => {
 
         return () => {
             socket.off("connect", onConnect);
-            socket.off("disconnect", onDisconnect);
             socket.removeAllListeners();
             socket.offAny();
         };
-    }, []);
+    }, [code]);
     const joinAsPlayer = useCallback(() => {
-        console.log("test");
-        socket.emit("test", "player");
-    }, []);
+        socket.emit("becomePlayer", code);
+    }, [code]);
+    const joinAsAudience = useCallback(() => {
+        socket.emit("becomeAudience", code);
+    }, [code]);
     return (
-        <Card className="min-w-full md:min-w-[500px]">
-            <div>
-                <p>Status: {isConnected ? "connected" : "disconnected"}</p>
-                <p>Transport: {transport}</p>
-                <p>Message: {lastMessage}</p>
-            </div>
+        <Card className="w-4/5 min-w-full md:min-w-[500px]">
             <div className="flex min-w-full flex-col items-center border-y-4 border-dashed border-gray-200 py-4">
                 <Header as="h4">Room Code</Header>
                 <Header
@@ -73,13 +76,27 @@ const Room = ({ code }: RoomProps) => {
                 </Header>
             </div>
             <div className="grid min-w-full grid-cols-2 gap-4 p-4">
-                <div className="rounded-md bg-gray-700 p-4 text-center underline">
-                    <Header as="h3">Players</Header>
-                    <Button onPress={joinAsPlayer}>Join</Button>
-                </div>
-                <div className="rounded-md bg-gray-700 p-4 text-center underline">
-                    <Header as="h3">Audience</Header>
-                </div>
+                <MemberList title="Players">
+                    {memberList.players.map((player) => (
+                        <div key={player}>{player}</div>
+                    ))}
+                    {
+                        <Button
+                            onPress={
+                                memberStatusType === "audience"
+                                    ? joinAsPlayer
+                                    : joinAsAudience
+                            }
+                        >
+                            {memberStatusType === "audience" ? "Join" : "Leave"}
+                        </Button>
+                    }
+                </MemberList>
+                <MemberList title="Audience">
+                    {memberList.audience.map((audience) => (
+                        <div key={audience}>{audience}</div>
+                    ))}
+                </MemberList>
             </div>
         </Card>
     );

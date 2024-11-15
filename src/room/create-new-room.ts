@@ -11,7 +11,7 @@ const createRoom = async () => {
     await client.connect();
 
     await client.set(newRoom.id, JSON.stringify(newRoom));
-    redirect(`/room/${newRoom.id}`);
+    redirect(`/room/${newRoom.id}/owner`);
 };
 
 export default createRoom;

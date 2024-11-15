@@ -1,7 +1,11 @@
 "use client";
+import Button from "@/components/button/button";
 import Card from "@/components/card/card";
 import Header from "@/components/headers/header";
-import { useEffect, useState } from "react";
+import { XCircleIcon } from "@heroicons/react/20/solid";
+import { useCallback, useEffect, useState } from "react";
+import MemberList from "../member-list";
+import { defaultMemberLists, MemberLists } from "../room";
 import { socket } from "../socket";
 
 interface RoomProps {
@@ -9,7 +13,8 @@ interface RoomProps {
 }
 
 const Room = ({ code }: RoomProps) => {
-    const [playerList, setPlayerList] = useState<string[]>([]);
+    const [memberList, setMemberList] =
+        useState<MemberLists>(defaultMemberLists);
 
     useEffect(() => {
         if (socket.connected) {
@@ -20,12 +25,12 @@ const Room = ({ code }: RoomProps) => {
 
         function onConnect() {
             console.log("connected");
-            socket.emit("joinRoom", code);
+            socket.emit("joinRoomAsOwner", code);
         }
 
         socket.on("connect", onConnect);
-        socket.on("playerList", (players) => {
-            setPlayerList(players);
+        socket.on("memberList", (players) => {
+            setMemberList(players);
         });
         socket.onAny((event, ...args) => {
             console.log(event, args);
@@ -36,9 +41,15 @@ const Room = ({ code }: RoomProps) => {
             socket.removeAllListeners();
             socket.offAny();
         };
-    }, []);
+    }, [code]);
+    const demotePlayer = useCallback(
+        (playerId: string) => {
+            socket.emit("demotePlayer", code, playerId);
+        },
+        [code],
+    );
     return (
-        <Card className="min-w-full md:min-w-[500px]">
+        <Card className="w-4/5 min-w-full md:min-w-[500px]">
             <div className="flex min-w-full flex-col items-center border-y-4 border-dashed border-gray-200 py-4">
                 <Header as="h4">Room Code</Header>
                 <Header
@@ -49,15 +60,26 @@ const Room = ({ code }: RoomProps) => {
                 </Header>
             </div>
             <div className="grid min-w-full grid-cols-2 gap-4 p-4">
-                <div className="rounded-md bg-gray-700 p-4 text-center underline">
-                    <Header as="h3">Players</Header>
-                    {playerList.map((player) => (
-                        <div key={player}>{player}</div>
+                <MemberList title="Players">
+                    {memberList.players.map((player) => (
+                        <div key={player} className="flex items-center">
+                            {player}
+                            <Button
+                                onPress={() => demotePlayer(player)}
+                                size="icon"
+                                className="ml-2"
+                                icon={<XCircleIcon className="size-4" />}
+                            >
+                                Kick
+                            </Button>
+                        </div>
                     ))}
-                </div>
-                <div className="rounded-md bg-gray-700 p-4 text-center underline">
-                    <Header as="h3">Audience</Header>
-                </div>
+                </MemberList>
+                <MemberList title="Audience">
+                    {memberList.audience.map((audience) => (
+                        <div key={audience}>{audience}</div>
+                    ))}
+                </MemberList>
             </div>
         </Card>
     );

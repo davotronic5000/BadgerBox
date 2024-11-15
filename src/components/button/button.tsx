@@ -5,7 +5,7 @@ import {
 } from "react-aria-components";
 
 interface ButtonProps extends ButtonAriaProps {
-    children: ReactNode;
+    children?: ReactNode;
     size?: "md" | "lg" | "icon";
     icon?: ReactNode;
 }
@@ -29,7 +29,11 @@ const Button = ({
             {...rest}
         >
             {icon}{" "}
-            <span className={`pt-0.5 ${icon ? "pl-1" : ""}`}>{children}</span>
+            {children && (
+                <span className={`pt-0.5 ${icon ? "pl-1" : ""}`}>
+                    {children}
+                </span>
+            )}
         </ButtonAria>
     );
 };
