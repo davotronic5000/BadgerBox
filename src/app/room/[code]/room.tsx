@@ -2,6 +2,12 @@
 import Button from "@/components/button/button";
 import Card from "@/components/card/card";
 import Header from "@/components/headers/header";
+import getMember from "@/member/get-member";
+import { Member } from "@/member/member";
+import {
+    getMemberIDFromLocalStorage,
+    storeMemberIDInLocalStorage,
+} from "@/member/member-local-storage";
 import { useCallback, useEffect, useState } from "react";
 import MemberList from "./member-list";
 import { socket } from "./socket";
@@ -28,6 +34,20 @@ const Room = ({ code }: RoomProps) => {
     const [memberStatusType, setMemberStatusType] = useState<
         "player" | "audience"
     >("audience");
+    const [member, setMember] = useState<Member | null>(null);
+    useEffect(() => {
+        async function handleMember() {
+            if (!member) {
+                const existingId = getMemberIDFromLocalStorage();
+                const newMember = await getMember(existingId);
+                if (existingId !== newMember.id) {
+                    storeMemberIDInLocalStorage(newMember.id);
+                }
+                setMember(newMember);
+            }
+        }
+        handleMember();
+    }, [setMember, member]);
 
     useEffect(() => {
         if (socket.connected) {
@@ -38,6 +58,7 @@ const Room = ({ code }: RoomProps) => {
 
         function onConnect() {
             console.log("connected");
+
             socket.emit("joinRoom", code);
         }
 
