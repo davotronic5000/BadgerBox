@@ -8,7 +8,7 @@ interface CardProps {
 const Card = ({ children, className }: CardProps) => {
     return (
         <div
-            className={`flex flex-col items-center rounded-md bg-gray-800 p-4 text-gray-200 shadow-solid-lg ${className}`}
+            className={`md:shadow-solid-md flex flex-col items-center rounded-md bg-gray-800 p-4 text-gray-200 shadow-solid-sm lg:shadow-solid-lg ${className}`}
         >
             {children}
         </div>

@@ -16,7 +16,9 @@ const ManageProfile = ({}: ManageProfileProps) => {
                     Profile
                 </Header>
             </div>
-            <EditName />
+            <div className="flex w-full flex-col items-center py-4">
+                <EditName />
+            </div>
         </Card>
     );
 };
