@@ -1,8 +1,8 @@
 import { createElement, ReactNode } from "react";
 
 const fontSizes = {
-    h1: "text-9xl",
-    h2: "text-4xl",
+    h1: "lg:text-9xl md:text-7xl text-5xl",
+    h2: "text-3xl md:text-4xl",
     h3: "text-2xl",
     h4: "text-base",
     h5: "text-sm",

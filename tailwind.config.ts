@@ -42,6 +42,7 @@ const config: Config = {
             },
             boxShadow: {
                 "solid-lg": "20px 20px 0 0 rgba(0, 0, 0, 0.6)",
+                "solid-md": "10px 10px 0 0 rgba(0, 0, 0, 0.6)",
                 "solid-sm": "5px 5px 0 0 rgba(0, 0, 0, 0.6)",
             },
             borderWidth: {
