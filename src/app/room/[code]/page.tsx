@@ -7,11 +7,12 @@ interface PageProps {
 }
 
 const Page = async ({ params }: PageProps) => {
-    const room = await getRoom(params.code);
+    const code = params.code.toUpperCase();
+    const room = await getRoom(code);
     if (room) {
-        return <Room code={params.code} />;
+        return <Room code={code} />;
     }
-    return <NoRoom code={params.code} />;
+    return <NoRoom code={code} />;
 };
 
 export default Page;
