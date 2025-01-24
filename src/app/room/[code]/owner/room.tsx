@@ -1,20 +1,17 @@
 "use client";
-import Button from "@/components/button/button";
 import Card from "@/components/card/card";
 import Header from "@/components/headers/header";
-import { XCircleIcon } from "@heroicons/react/20/solid";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import MemberList from "../member-list";
-import { defaultMemberLists, MemberLists } from "../room";
 import { socket } from "../socket";
+import useMemberList from "../use-member-list";
 
 interface RoomProps {
     code: string;
 }
 
 const Room = ({ code }: RoomProps) => {
-    const [memberList, setMemberList] =
-        useState<MemberLists>(defaultMemberLists);
+    const { audienceList, playerList } = useMemberList();
 
     useEffect(() => {
         if (socket.connected) {
@@ -29,9 +26,7 @@ const Room = ({ code }: RoomProps) => {
         }
 
         socket.on("connect", onConnect);
-        socket.on("memberList", (players) => {
-            setMemberList(players);
-        });
+
         socket.onAny((event, ...args) => {
             console.log(event, args);
         });
@@ -60,26 +55,15 @@ const Room = ({ code }: RoomProps) => {
                 </Header>
             </div>
             <div className="grid min-w-full grid-cols-2 gap-4 p-4">
-                <MemberList title="Players">
-                    {memberList.players.map((player) => (
-                        <div key={player} className="flex items-center">
-                            {player}
-                            <Button
-                                onPress={() => demotePlayer(player)}
-                                size="icon"
-                                className="ml-2"
-                                icon={<XCircleIcon className="size-4" />}
-                            >
-                                Kick
-                            </Button>
-                        </div>
-                    ))}
-                </MemberList>
-                <MemberList title="Audience">
-                    {memberList.audience.map((audience) => (
-                        <div key={audience}>{audience}</div>
-                    ))}
-                </MemberList>
+                <MemberList
+                    title="Players"
+                    members={playerList.items}
+                    demotePlayerFunction={demotePlayer}
+                ></MemberList>
+                <MemberList
+                    title="Audience"
+                    members={audienceList.items}
+                ></MemberList>
             </div>
         </Card>
     );

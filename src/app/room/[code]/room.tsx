@@ -11,30 +11,20 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import MemberList from "./member-list";
 import { socket } from "./socket";
+import useMemberList, { memberType } from "./use-member-list";
 
 interface RoomProps {
     code: string;
 }
 
-export interface MemberLists {
-    owners: string[];
-    players: string[];
-    audience: string[];
-}
-
-export const defaultMemberLists = {
-    owners: [],
-    players: [],
-    audience: [],
-};
-
 const Room = ({ code }: RoomProps) => {
-    const [memberList, setMemberList] =
-        useState<MemberLists>(defaultMemberLists);
-    const [memberStatusType, setMemberStatusType] = useState<
-        "player" | "audience"
-    >("audience");
+    const [memberStatusType, setMemberStatusType] = useState<memberType | null>(
+        null,
+    );
     const [member, setMember] = useState<Member | null>(null);
+
+    const { playerList, audienceList } = useMemberList();
+
     useEffect(() => {
         async function handleMember() {
             if (!member) {
@@ -57,18 +47,25 @@ const Room = ({ code }: RoomProps) => {
         }
 
         function onConnect() {
-            console.log("connected");
-
-            socket.emit("joinRoom", code);
+            if (member && memberStatusType === null) {
+                socket.emit("joinRoom", code, member.id, member);
+            }
         }
 
         socket.on("connect", onConnect);
-        socket.on("memberList", (players) => {
-            setMemberList(players);
-        });
-        socket.on("memberStatus", (member) => {
-            setMemberStatusType(member.memberType);
-        });
+        socket.on(
+            "newMember",
+            (payload: {
+                id: string;
+                member: Member;
+                memberType: memberType;
+            }) => {
+                if (payload.id === member?.id) {
+                    setMemberStatusType(payload.memberType);
+                }
+            },
+        );
+
         socket.onAny((event, ...args) => {
             console.log(event, args);
         });
@@ -78,12 +75,14 @@ const Room = ({ code }: RoomProps) => {
             socket.removeAllListeners();
             socket.offAny();
         };
-    }, [code]);
+    }, [code, member, memberStatusType]);
     const joinAsPlayer = useCallback(() => {
         socket.emit("becomePlayer", code);
+        setMemberStatusType("player");
     }, [code]);
     const joinAsAudience = useCallback(() => {
         socket.emit("becomeAudience", code);
+        setMemberStatusType("audience");
     }, [code]);
     return (
         <Card className="w-4/5 min-w-full md:min-w-[500px]">
@@ -97,27 +96,21 @@ const Room = ({ code }: RoomProps) => {
                 </Header>
             </div>
             <div className="grid min-w-full grid-cols-2 gap-4 p-4">
-                <MemberList title="Players">
-                    {memberList.players.map((player) => (
-                        <div key={player}>{player}</div>
-                    ))}
-                    {
-                        <Button
-                            onPress={
-                                memberStatusType === "audience"
-                                    ? joinAsPlayer
-                                    : joinAsAudience
-                            }
-                        >
-                            {memberStatusType === "audience" ? "Join" : "Leave"}
-                        </Button>
-                    }
+                <MemberList title="Players" members={playerList.items}>
+                    <Button
+                        onPress={
+                            memberStatusType === "audience"
+                                ? joinAsPlayer
+                                : joinAsAudience
+                        }
+                    >
+                        {memberStatusType === "audience" ? "Join" : "Leave"}
+                    </Button>
                 </MemberList>
-                <MemberList title="Audience">
-                    {memberList.audience.map((audience) => (
-                        <div key={audience}>{audience}</div>
-                    ))}
-                </MemberList>
+                <MemberList
+                    title="Audience"
+                    members={audienceList.items}
+                ></MemberList>
             </div>
         </Card>
     );

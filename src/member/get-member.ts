@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "redis";
-import { createMember, Member } from "./member";
+import { createMember } from "./member";
 
 const getMember = async (id: string | null) => {
         const client = createClient();
