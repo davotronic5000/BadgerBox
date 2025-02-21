@@ -1,8 +1,11 @@
 import PageHeader from "@/components/headers/page-header";
+import { enableMapSet } from "immer";
 import type { Metadata } from "next";
 import { Bungee, Poppins } from "next/font/google";
 import ClientProviders from "./client-providers";
 import "./globals.css";
+
+enableMapSet();
 
 const bungee = Bungee({
     subsets: ["latin"],

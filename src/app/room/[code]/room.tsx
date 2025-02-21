@@ -8,25 +8,24 @@ import {
     getMemberIDFromLocalStorage,
     storeMemberIDInLocalStorage,
 } from "@/member/member-local-storage";
-import { addMember } from "@/room/create-new-room";
+import useRoom, { addAudienceMember } from "@/reducers/use-room";
 import Room from "@/room/room";
 import { useCallback, useEffect, useState } from "react";
 import MemberList from "./member-list";
 import { socket } from "./socket";
-import useMemberList, { memberType } from "./use-member-list";
+import { memberType } from "./use-member-list";
 
 interface RoomProps {
-    room: Room;
+    initialRoom: Room;
 }
 
-const GameRoom = ({ room }: RoomProps) => {
+const GameRoom = ({ initialRoom }: RoomProps) => {
+    const { room, dispatchRoomAction } = useRoom(initialRoom);
     const code = room.id;
     const [memberStatusType, setMemberStatusType] = useState<memberType | null>(
         null,
     );
     const [member, setMember] = useState<Member | null>(null);
-
-    const { playerList, audienceList } = useMemberList();
 
     useEffect(() => {
         async function handleMember() {
@@ -52,8 +51,7 @@ const GameRoom = ({ room }: RoomProps) => {
         async function onConnect() {
             if (member && memberStatusType === null) {
                 socket.emit("joinRoom", code, member.id, member);
-                const addMemberFunc = addMember(room);
-                await addMemberFunc(member);
+                dispatchRoomAction(addAudienceMember(member));
             }
         }
 
@@ -101,7 +99,11 @@ const GameRoom = ({ room }: RoomProps) => {
                 </Header>
             </div>
             <div className="grid min-w-full grid-cols-2 gap-4 p-4">
-                <MemberList title="Players" members={playerList.items}>
+                <MemberList
+                    title="Players"
+                    members={room.members}
+                    attendees={room.players}
+                >
                     <Button
                         onPress={
                             memberStatusType === "audience"
@@ -114,7 +116,8 @@ const GameRoom = ({ room }: RoomProps) => {
                 </MemberList>
                 <MemberList
                     title="Audience"
-                    members={audienceList.items}
+                    members={room.members}
+                    attendees={room.audience}
                 ></MemberList>
             </div>
         </Card>

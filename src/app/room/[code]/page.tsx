@@ -10,7 +10,7 @@ const Page = async ({ params }: PageProps) => {
     const code = params.code.toUpperCase();
     const room = await getRoom(code);
     if (room) {
-        return <Room room={room} />;
+        return <Room initialRoom={room} />;
     }
     return <NoRoom code={code} />;
 };

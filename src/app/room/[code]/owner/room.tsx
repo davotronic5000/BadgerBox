@@ -1,18 +1,17 @@
 "use client";
 import Card from "@/components/card/card";
 import Header from "@/components/headers/header";
+import Room from "@/room/room";
 import { useCallback, useEffect } from "react";
 import MemberList from "../member-list";
 import { socket } from "../socket";
-import useMemberList from "../use-member-list";
 
 interface RoomProps {
-    code: string;
+    room: Room;
 }
 
-const Room = ({ code }: RoomProps) => {
-    const { audienceList, playerList } = useMemberList();
-
+const OwnerRoom = ({ room }: RoomProps) => {
+    const code = room.id;
     useEffect(() => {
         if (socket.connected) {
             onConnect();
@@ -57,16 +56,18 @@ const Room = ({ code }: RoomProps) => {
             <div className="grid min-w-full grid-cols-2 gap-4 p-4">
                 <MemberList
                     title="Players"
-                    members={playerList.items}
+                    members={room.members}
+                    attendees={room.players}
                     demotePlayerFunction={demotePlayer}
                 ></MemberList>
                 <MemberList
                     title="Audience"
-                    members={audienceList.items}
+                    members={room.members}
+                    attendees={room.players}
                 ></MemberList>
             </div>
         </Card>
     );
 };
 
-export default Room;
+export default OwnerRoom;

@@ -7,7 +7,8 @@ import { ListBox, ListBoxItem } from "react-aria-components";
 
 interface MemberListProps {
     title: string;
-    members: Member[];
+    members: Map<string, Member>;
+    attendees: Set<string>;
     children?: ReactNode;
     demotePlayerFunction?: (memberId: string) => void;
 }
@@ -15,6 +16,7 @@ interface MemberListProps {
 const MemberList = ({
     children,
     members,
+    attendees,
     demotePlayerFunction,
     title,
 }: MemberListProps) => {
@@ -23,25 +25,36 @@ const MemberList = ({
             <Header as="h3" className="underline">
                 {title}
             </Header>
-            <ListBox items={members} aria-label={title}>
-                {(item) => (
-                    <ListBoxItem
-                        textValue={item.name}
-                        className="flex items-center"
-                    >
-                        {item.name}
-                        {demotePlayerFunction && (
-                            <Button
-                                onPress={() => demotePlayerFunction(item.id)}
-                                size="icon"
-                                className="ml-2"
-                                icon={<XCircleIcon className="size-4" />}
+            <ListBox aria-label={title}>
+                {Array.from(attendees.values()).map((id) => {
+                    const item = members.get(id);
+                    if (item) {
+                        return (
+                            <ListBoxItem
+                                textValue={item.name}
+                                className="flex items-center"
+                                key={id}
                             >
-                                Kick
-                            </Button>
-                        )}
-                    </ListBoxItem>
-                )}
+                                {item.name}
+                                {demotePlayerFunction && (
+                                    <Button
+                                        onPress={() =>
+                                            demotePlayerFunction(item.id)
+                                        }
+                                        size="icon"
+                                        className="ml-2"
+                                        icon={
+                                            <XCircleIcon className="size-4" />
+                                        }
+                                    >
+                                        Kick
+                                    </Button>
+                                )}
+                            </ListBoxItem>
+                        );
+                    }
+                    return null;
+                })}
             </ListBox>
             {children}
         </div>

@@ -1,10 +1,10 @@
 "use server";
 
+import redisConnect from "@/utilities/redis";
 import { createMember } from "./member";
-import redisClient from "@/utilities/redis";
 
 const getMember = async (id: string | null) => {
-        const client = await redisClient;
+        const client = await redisConnect() ;
         let member;
         if (id) {
             const dbMember = await client.get(id);
@@ -16,7 +16,6 @@ const getMember = async (id: string | null) => {
             member = createMember();
             await client.set(member.id, JSON.stringify(member))
         }
-        await client.disconnect();
         return member;
 };
 

@@ -3,21 +3,19 @@
 import { redirect } from "next/navigation";
 import Room, { createRoom } from "./room";
 import {jsonMapSetReplacer} from '@/utilities/json-serialisation';
-import redisClient from "@/utilities/redis";
 import { Member } from "@/member/member";
+import redisConnect from "@/utilities/redis";
 
 const createNewRoom = async () => {
     const newRoom = createRoom();
-    const client = await redisClient;
+    const client = await redisConnect();
 
     await client.set(newRoom.id, JSON.stringify(newRoom, jsonMapSetReplacer));
     redirect(`/room/${newRoom.id}/owner`);
 };
 
-export const addMember = (room: Room) => async (member: Member)  => {
-    room.members.set(member.id, member);
-    room.audience.add(member.id);
-    const client = await redisClient;
+export const addMember = async (room: Room)  => {
+    const client = await redisConnect();
     await client.set(room.id, JSON.stringify(room, jsonMapSetReplacer));
 }
 

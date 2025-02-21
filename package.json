@@ -11,6 +11,7 @@
     },
     "dependencies": {
         "@heroicons/react": "^2.1.5",
+        "immer": "^10.1.1",
         "next": "14.2.8",
         "react": "^18",
         "react-aria-components": "^1.3.3",
@@ -21,6 +22,7 @@
         "tailwindcss-bg-patterns": "^0.3.0",
         "tailwindcss-opentype": "^1.1.0",
         "tailwindcss-react-aria-components": "^1.1.5",
+        "use-immer": "^0.11.0",
         "uuid": "^10.0.0"
     },
     "devDependencies": {

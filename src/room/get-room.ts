@@ -1,16 +1,13 @@
 "use server";
 
-import { createClient } from "redis";
 import { createRoom } from "./room";
+import redisConnect from "@/utilities/redis";
 
 const getRoom = async (code: string) => {
     const c = code.toUpperCase();
     if (c.match(/^[A-Z]{4}$/)) {
-        const client = createClient();
-        client.on("error", (err) => console.log("Redis Client Error", err));
-        await client.connect();
+        const client = await redisConnect();
         const room = await client.get(c);
-        await client.disconnect();
         if (room) {
             return createRoom(room);
         }
