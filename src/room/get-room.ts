@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "redis";
-import Room from "./room";
+import { createRoom } from "./room";
 
 const getRoom = async (code: string) => {
     const c = code.toUpperCase();
@@ -12,7 +12,7 @@ const getRoom = async (code: string) => {
         const room = await client.get(c);
         await client.disconnect();
         if (room) {
-            return new Room(room);
+            return createRoom(room);
         }
     }
     return null;

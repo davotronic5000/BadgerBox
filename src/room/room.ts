@@ -1,14 +1,29 @@
+import { Member } from "@/member/member";
 import { generateCode } from "./generate-room-code";
+import { jsonMapSetReplacer, jsonMapSetReviver } from "@/utilities/json-serialisation";
+import redisClient from "@/utilities/redis";
 
-export class Room {
-    readonly id: string;
-    constructor(jsonString?: string) {
-        if (jsonString) {
-            const json = JSON.parse(jsonString);
-            this.id = json.id;
-        }
-        this.id = generateCode();
+export interface Room {
+    id: string;
+    members: Map<string, Member>;
+    audience: Set<string>;
+    players: Set<string>;
+}
+
+export const createRoom = (jsonString?: string) => {
+    if (jsonString) {
+        const json = JSON.parse(jsonString, jsonMapSetReviver);
+        return json;
+    }
+    return {
+        id: generateCode(),
+        members: new Map(),
+        audience: new Set(),
+        players: new Set(),
     }
 }
+
+
+
 
 export default Room;

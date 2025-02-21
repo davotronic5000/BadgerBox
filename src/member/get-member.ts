@@ -1,12 +1,10 @@
 "use server";
 
-import { createClient } from "redis";
 import { createMember } from "./member";
+import redisClient from "@/utilities/redis";
 
 const getMember = async (id: string | null) => {
-        const client = createClient();
-        client.on("error", (err) => console.log("Redis Client Error", err));
-        await client.connect();
+        const client = await redisClient;
         let member;
         if (id) {
             const dbMember = await client.get(id);

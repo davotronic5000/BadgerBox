@@ -8,16 +8,19 @@ import {
     getMemberIDFromLocalStorage,
     storeMemberIDInLocalStorage,
 } from "@/member/member-local-storage";
+import { addMember } from "@/room/create-new-room";
+import Room from "@/room/room";
 import { useCallback, useEffect, useState } from "react";
 import MemberList from "./member-list";
 import { socket } from "./socket";
 import useMemberList, { memberType } from "./use-member-list";
 
 interface RoomProps {
-    code: string;
+    room: Room;
 }
 
-const Room = ({ code }: RoomProps) => {
+const GameRoom = ({ room }: RoomProps) => {
+    const code = room.id;
     const [memberStatusType, setMemberStatusType] = useState<memberType | null>(
         null,
     );
@@ -46,9 +49,11 @@ const Room = ({ code }: RoomProps) => {
             socket.connect();
         }
 
-        function onConnect() {
+        async function onConnect() {
             if (member && memberStatusType === null) {
                 socket.emit("joinRoom", code, member.id, member);
+                const addMemberFunc = addMember(room);
+                await addMemberFunc(member);
             }
         }
 
@@ -75,7 +80,7 @@ const Room = ({ code }: RoomProps) => {
             socket.removeAllListeners();
             socket.offAny();
         };
-    }, [code, member, memberStatusType]);
+    }, [code, member, memberStatusType, room]);
     const joinAsPlayer = useCallback(() => {
         socket.emit("becomePlayer", code);
         setMemberStatusType("player");
@@ -116,4 +121,4 @@ const Room = ({ code }: RoomProps) => {
     );
 };
 
-export default Room;
+export default GameRoom;
