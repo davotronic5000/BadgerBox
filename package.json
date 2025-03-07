@@ -22,7 +22,6 @@
         "tailwindcss-bg-patterns": "^0.3.0",
         "tailwindcss-opentype": "^1.1.0",
         "tailwindcss-react-aria-components": "^1.1.5",
-        "use-immer": "^0.11.0",
         "uuid": "^10.0.0"
     },
     "devDependencies": {

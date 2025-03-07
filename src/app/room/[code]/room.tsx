@@ -8,19 +8,19 @@ import {
     getMemberIDFromLocalStorage,
     storeMemberIDInLocalStorage,
 } from "@/member/member-local-storage";
-import useRoom, { addAudienceMember } from "@/reducers/use-room";
 import Room from "@/room/room";
 import { useCallback, useEffect, useState } from "react";
 import MemberList from "./member-list";
 import { socket } from "./socket";
 import { memberType } from "./use-member-list";
+import useRoom from "./use-room";
 
 interface RoomProps {
     initialRoom: Room;
 }
 
 const GameRoom = ({ initialRoom }: RoomProps) => {
-    const { room, dispatchRoomAction } = useRoom(initialRoom);
+    const { room, addMember, updateMember } = useRoom(initialRoom);
     const code = room.id;
     const [memberStatusType, setMemberStatusType] = useState<memberType | null>(
         null,
@@ -36,10 +36,16 @@ const GameRoom = ({ initialRoom }: RoomProps) => {
                     storeMemberIDInLocalStorage(newMember.id);
                 }
                 setMember(newMember);
+                const newMemberStatusType = room.players.has(newMember.id)
+                    ? "player"
+                    : room.audience.has(newMember.id)
+                      ? "audience"
+                      : null;
+                setMemberStatusType(newMemberStatusType);
             }
         }
         handleMember();
-    }, [setMember, member]);
+    }, [setMember, member, setMemberStatusType, room]);
 
     useEffect(() => {
         if (socket.connected) {
@@ -50,8 +56,11 @@ const GameRoom = ({ initialRoom }: RoomProps) => {
 
         async function onConnect() {
             if (member && memberStatusType === null) {
+                // Add memberType to socket joinRoom function
+                // Use stored memberStatus to join right room
+                // If there is no memberStatus you need to be audience
                 socket.emit("joinRoom", code, member.id, member);
-                dispatchRoomAction(addAudienceMember(member));
+                addMember(member, "audience", true);
             }
         }
 
@@ -66,6 +75,28 @@ const GameRoom = ({ initialRoom }: RoomProps) => {
                 if (payload.id === member?.id) {
                     setMemberStatusType(payload.memberType);
                 }
+                if (payload.member && payload.memberType !== "owner") {
+                    addMember(
+                        payload.member,
+                        payload.memberType === "player"
+                            ? "players"
+                            : "audience",
+                        false,
+                    );
+                }
+            },
+        );
+
+        socket.on(
+            "updatedMember",
+            (payload: {
+                id: string;
+                memberType: Omit<memberType, "owner">;
+            }) => {
+                updateMember(
+                    payload.id,
+                    payload.memberType === "player" ? "players" : "audience",
+                );
             },
         );
 
@@ -78,15 +109,21 @@ const GameRoom = ({ initialRoom }: RoomProps) => {
             socket.removeAllListeners();
             socket.offAny();
         };
-    }, [code, member, memberStatusType, room]);
+    }, [code, member, memberStatusType, room, addMember, updateMember]);
     const joinAsPlayer = useCallback(() => {
-        socket.emit("becomePlayer", code);
-        setMemberStatusType("player");
-    }, [code]);
+        if (member) {
+            socket.emit("becomePlayer", code);
+            setMemberStatusType("player");
+            addMember(member, "players", true);
+        }
+    }, [code, member, addMember]);
     const joinAsAudience = useCallback(() => {
-        socket.emit("becomeAudience", code);
-        setMemberStatusType("audience");
-    }, [code]);
+        if (member) {
+            socket.emit("becomeAudience", code);
+            setMemberStatusType("audience");
+            addMember(member, "audience", true);
+        }
+    }, [code, member, addMember]);
     return (
         <Card className="w-4/5 min-w-full md:min-w-[500px]">
             <div className="flex min-w-full flex-col items-center border-y-4 border-dashed border-gray-200 py-4">
